@@ -2,13 +2,13 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def scrape_news(query):
+def scrape_news(query):   # main keyword used for searching in google search engine
     base_url = "https://news.google.com/search"
     search_url = f"{base_url}?q={query}"
     response = requests.get(search_url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.text, 'html.parser') 
 
-    articles = []
+    articles = []   # making an array to store the data from the article
     for a in soup.select('article h3'):
         if a.a:
             title = a.text
