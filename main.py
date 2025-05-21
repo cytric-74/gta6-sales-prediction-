@@ -15,7 +15,7 @@ def combine_and_predict():
     # Dummy model (train on historic sales if available)
     model = LinearRegression()
     X = avg_sentiment
-    y = [50]  # Assume 50M projected sales
+    y = [50] # assuming sales
     model.fit(X, y)
     
     pred = model.predict(X)
