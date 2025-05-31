@@ -14,7 +14,6 @@ from datetime import datetime
 import logging
 from typing import Optional, Dict, List, Union
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -25,7 +24,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Constants
+
 DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 analyzer = SentimentIntensityAnalyzer()
@@ -70,6 +69,8 @@ def save_data(df: pd.DataFrame, filename: str) -> bool:
         return False
 
 # Twitter data collection
+
+
 def fetch_twitter_data(query: str, max_results: int = 50) -> Optional[pd.DataFrame]:
     headers = {"Authorization": f"Bearer {Config.TWITTER_BEARER_TOKEN}"}
     url = "https://api.twitter.com/2/tweets/search/recent"
