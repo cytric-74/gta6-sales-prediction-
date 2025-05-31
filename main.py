@@ -38,10 +38,9 @@ class Config:
     MAX_RETRIES = 3
     RETRY_DELAY = 2
 
-# Helper functions
+# Helper functions  for error handling and retrying
 def safe_request(url: str, headers: Optional[Dict] = None, params: Optional[Dict] = None, 
                 max_retries: int = Config.MAX_RETRIES) -> Optional[requests.Response]:
-    """Make HTTP requests with error handling and retries."""
     for attempt in range(max_retries):
         try:
             response = requests.get(
@@ -61,7 +60,6 @@ def safe_request(url: str, headers: Optional[Dict] = None, params: Optional[Dict
     return None
 
 def save_data(df: pd.DataFrame, filename: str) -> bool:
-    """Save DataFrame to CSV with error handling."""
     try:
         filepath = os.path.join(DATA_DIR, filename)
         df.to_csv(filepath, index=False)
@@ -73,7 +71,6 @@ def save_data(df: pd.DataFrame, filename: str) -> bool:
 
 # Twitter data collection
 def fetch_twitter_data(query: str, max_results: int = 50) -> Optional[pd.DataFrame]:
-    """Fetch recent tweets containing the query."""
     headers = {"Authorization": f"Bearer {Config.TWITTER_BEARER_TOKEN}"}
     url = "https://api.twitter.com/2/tweets/search/recent"
     params = {
@@ -109,8 +106,8 @@ def fetch_twitter_data(query: str, max_results: int = 50) -> Optional[pd.DataFra
         return None
 
 # YouTube data collection
+
 def fetch_youtube_comments(query: str, max_videos: int = 5, max_comments: int = 50) -> Optional[pd.DataFrame]:
-    """Fetch comments from YouTube videos matching the query."""
     try:
         youtube = build('youtube', 'v3', developerKey=Config.YOUTUBE_API_KEY)
     except Exception as e:
@@ -152,6 +149,7 @@ def fetch_youtube_comments(query: str, max_videos: int = 5, max_comments: int = 
     return df
 
 # News scraping
+
 def scrape_news(query: str) -> Optional[pd.DataFrame]:
     """Scrape news articles from Google News."""
     formatted_query = query.replace(" ", "%20")
@@ -182,8 +180,9 @@ def scrape_news(query: str) -> Optional[pd.DataFrame]:
         return None
 
 # Sentiment analysis
+
 def analyze_sentiment(df: pd.DataFrame, column: str) -> Optional[pd.DataFrame]:
-    """Add sentiment analysis to DataFrame."""
+    # adding sentiment analysis to DataFrame 
     if df.empty:
         logger.warning("Empty DataFrame received for sentiment analysis")
         return df
@@ -198,10 +197,11 @@ def analyze_sentiment(df: pd.DataFrame, column: str) -> Optional[pd.DataFrame]:
         return None
 
 # Prediction models
+
 def combine_and_predict() -> Optional[pd.DataFrame]:
     """Combine data sources and predict sales."""
     try:
-        # Load and analyze data
+        # loading and analyzing data
         twitter_df = analyze_sentiment(pd.read_csv("data/twitter_data.csv"), "text")
         youtube_df = analyze_sentiment(pd.read_csv("data/youtube_data.csv"), "comment")
         news_df = analyze_sentiment(pd.read_csv("data/news_articles.csv"), "title")
@@ -210,7 +210,7 @@ def combine_and_predict() -> Optional[pd.DataFrame]:
             logger.error("Failed to load one or more data sources")
             return None
 
-        # Calculate average sentiments
+        # calculating average sentiments
         avg_sentiments = pd.DataFrame({
             'twitter_sentiment': [twitter_df['sentiment'].mean()],
             'youtube_sentiment': [youtube_df['sentiment'].mean()],
@@ -218,16 +218,14 @@ def combine_and_predict() -> Optional[pd.DataFrame]:
             'timestamp': [datetime.now().isoformat()]
         })
 
-        # Generate training data (simulated)
         np.random.seed(42)
         X_train = pd.DataFrame({
             'twitter_sentiment': np.random.uniform(-1, 1, 100),
             'youtube_sentiment': np.random.uniform(-1, 1, 100),
             'news_sentiment': np.random.uniform(-1, 1, 100),
         })
-        y_train = X_train.mean(axis=1) * 50 + 85  # Mocked-up sales range
+        y_train = X_train.mean(axis=1) * 50 + 85  # random estimation
 
-        # Initialize and train models
         models = {
             'Linear Regression': LinearRegression(),
             'Random Forest': RandomForestRegressor(n_estimators=100, random_state=42),
@@ -245,8 +243,7 @@ def combine_and_predict() -> Optional[pd.DataFrame]:
                 logger.error(f"Error in {name} prediction: {str(e)}")
                 predictions[name] = None
 
-        # Save results
-        result_df = avg_sentiments.copy()
+        result_df = avg_sentiments.copy() #saving results
         for name, pred in predictions.items():
             result_df[name.replace(" ", "_").lower() + '_prediction'] = pred
 
@@ -260,7 +257,7 @@ def combine_and_predict() -> Optional[pd.DataFrame]:
         return None
 
 def main():
-    """Main execution function."""
+
     logger.info("Starting sentiment analysis pipeline...")
     
     logger.info("Collecting Twitter data...")
