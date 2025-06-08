@@ -68,8 +68,8 @@ def save_data(df: pd.DataFrame, filename: str) -> bool:
         logger.error(f"Failed to save data to {filename}: {str(e)}")
         return False
 
-# Twitter data collection
 
+# Twitter data collection
 
 def fetch_twitter_data(query: str, max_results: int = 50) -> Optional[pd.DataFrame]:
     headers = {"Authorization": f"Bearer {Config.TWITTER_BEARER_TOKEN}"}
