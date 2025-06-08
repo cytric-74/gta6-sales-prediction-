@@ -152,7 +152,6 @@ def fetch_youtube_comments(query: str, max_videos: int = 5, max_comments: int = 
 # News scraping
 
 def scrape_news(query: str) -> Optional[pd.DataFrame]:
-    """Scrape news articles from Google News."""
     formatted_query = query.replace(" ", "%20")
     search_url = f"https://news.google.com/search?q={formatted_query}&hl=en-US&gl=US&ceid=US:en"
     
@@ -183,7 +182,6 @@ def scrape_news(query: str) -> Optional[pd.DataFrame]:
 # Sentiment analysis
 
 def analyze_sentiment(df: pd.DataFrame, column: str) -> Optional[pd.DataFrame]:
-    # adding sentiment analysis to DataFrame 
     if df.empty:
         logger.warning("Empty DataFrame received for sentiment analysis")
         return df
